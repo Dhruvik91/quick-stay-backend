@@ -1,0 +1,67 @@
+# ===================================
+# Node.js / Express TypeScript App
+# Production Ready .gitignore
+# ===================================
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Build outputs
+dist/
+build/
+out/
+coverage/
+.nyc_output/
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Debug / runtime files
+*.pid
+*.seed
+*.pid.lock
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Optional: Keep your lockfiles out (if you prefer fresh installs in prod)
+package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# PM2 / process manager logs
+pids
+*.seed
+*.pid.lock
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+coverage/
+.cache/
+.tmp/
