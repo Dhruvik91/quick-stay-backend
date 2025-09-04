@@ -80,11 +80,7 @@ app.use(
 
 // CORS configuration
 const allowedOrigins = [
-  "https://kick-suffle.vercel.app",
-  "http://kick-suffle.vercel.app",
-  "https://www.kicksuffel.com/",
   "http://localhost:3000",
-  "http://localhost:4000",
 ];
 
 app.use(
@@ -127,7 +123,7 @@ app.use(
   swaggerUi.serve,
   swaggerUi.setup(specs, {
     customCss: ".swagger-ui .topbar { display: none }",
-    customSiteTitle: "Kick Shuffle API Documentation",
+    customSiteTitle: "Quick Stay Backend API Documentation",
     customfavIcon: "/favicon.ico",
     swaggerOptions: {
       persistAuthorization: true,
@@ -192,7 +188,7 @@ if (process.env.NODE_ENV !== "test") {
   app.listen(PORT, "0.0.0.0", () => {
     logger.info(`Server is running on port ${PORT}`);
     logger.info(
-      `API Documentation available at http://0.0.0.0:${PORT}/api-docs`
+      `API Documentation available at http://localhost:${PORT}/api-docs`
     );
   });
 }

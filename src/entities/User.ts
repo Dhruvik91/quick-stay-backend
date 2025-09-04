@@ -4,31 +4,15 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from "typeorm";
-
-export interface Accommodation {
-  id: string;
-  name: string;
-  type: "PG" | "Rental" | "Hostel" | "Co-living";
-  address: string;
-  price: number;
-  rating?: number;
-  description?: string;
-  imageUrl?: string;
-  verified: boolean;
-  amenities: string[];
-  contact?: {
-    phone?: string;
-    email?: string;
-  };
-}
 
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column({ type: "varchar", length: 255 })
+  @Column({ type: "varchar", length: 255, })
   name!: string;
 
   @Column({
@@ -51,7 +35,7 @@ export class User {
   description?: string;
 
   @Column({ type: "varchar", length: 500, nullable: true })
-  imageUrl?: string;
+  image_url?: string;
 
   @Column({ type: "boolean", default: false })
   verified!: boolean;
@@ -59,15 +43,24 @@ export class User {
   @Column({ type: "simple-array", default: [] })
   amenities!: string[];
 
-  @Column({ type: "json", nullable: true })
-  contact?: {
-    phone?: string;
-    email?: string;
-  };
+  @Column({type: "varchar", length: 255, nullable: true})
+  email!: string;
+
+  @Column({type: "varchar", length: 255, nullable: true})
+  phone!: string;
+  
+  @Column({ type: "boolean", default: false })
+  is_active!: boolean;
+
+  @Column({ type: "boolean", default: false })
+  is_deleted!: boolean;
 
   @CreateDateColumn()
-  createdAt!: Date;
+  created_at!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updated_at!: Date;
+
+  @DeleteDateColumn()
+  deleted_at!: Date;
 }

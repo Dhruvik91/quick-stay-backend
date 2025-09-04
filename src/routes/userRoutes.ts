@@ -1,5 +1,17 @@
 import { Router } from "express";
 import { UserController } from "../controllers/UserController";
+import {
+  validateBody,
+  validateQuery,
+  validateParams,
+} from "../middleware/validateRequest";
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  GetUsersQueryDto,
+  GetUserByIdParamsDto,
+  UpdateUserParamsDto,
+} from "../types/dto";
 
 const router = Router();
 const userController = new UserController();
@@ -19,7 +31,7 @@ const userController = new UserController();
  *         id:
  *           type: string
  *           format: uuid
- *           description: Unique identifier for the user
+ *           description: Unique identifier for the accommodation
  *         name:
  *           type: string
  *           description: Name of the accommodation
@@ -41,7 +53,7 @@ const userController = new UserController();
  *         description:
  *           type: string
  *           description: Description of the accommodation
- *         imageUrl:
+ *         image_url:
  *           type: string
  *           description: URL of the accommodation image
  *         verified:
@@ -53,30 +65,42 @@ const userController = new UserController();
  *           items:
  *             type: string
  *           description: List of amenities available
- *         contact:
- *           type: object
- *           properties:
- *             phone:
- *               type: string
- *             email:
- *               type: string
- *           description: Contact information
- *         createdAt:
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Contact email
+ *         phone:
+ *           type: string
+ *           description: Contact phone number
+ *         is_active:
+ *           type: boolean
+ *           default: false
+ *           description: Whether the accommodation is active
+ *         is_deleted:
+ *           type: boolean
+ *           default: false
+ *           description: Whether the accommodation is deleted
+ *         created_at:
  *           type: string
  *           format: date-time
  *           description: Creation timestamp
- *         updatedAt:
+ *         updated_at:
  *           type: string
  *           format: date-time
  *           description: Last update timestamp
+ *         deleted_at:
+ *           type: string
+ *           format: date-time
+ *           nullable: true
+ *           description: Deletion timestamp
  */
 
 /**
  * @swagger
  * /api/users:
  *   post:
- *     summary: Create a new user
- *     tags: [Users]
+ *     summary: Create a new accommodation listing
+ *     tags: [Accommodations]
  *     description: Create a new accommodation listing
  *     requestBody:
  *       required: true
@@ -111,29 +135,24 @@ const userController = new UserController();
  *               description:
  *                 type: string
  *                 example: "Beautiful apartment with modern amenities"
- *               imageUrl:
+ *               image_url:
  *                 type: string
  *                 example: "https://example.com/image.jpg"
- *               verified:
- *                 type: boolean
- *                 example: false
  *               amenities:
  *                 type: array
  *                 items:
  *                   type: string
  *                 example: ["WiFi", "Parking", "Gym"]
- *               contact:
- *                 type: object
- *                 properties:
- *                   phone:
- *                     type: string
- *                     example: "+1234567890"
- *                   email:
- *                     type: string
- *                     example: "contact@sunsetapartments.com"
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: "contact@sunsetapartments.com"
+ *               phone:
+ *                 type: string
+ *                 example: "+1234567890"
  *     responses:
  *       201:
- *         description: User created successfully
+ *         description: Accommodation created successfully
  *         content:
  *           application/json:
  *             schema:
@@ -148,14 +167,14 @@ const userController = new UserController();
  *       500:
  *         description: Internal server error
  */
-router.post("/", userController.createUser);
+router.post("/", validateBody(CreateUserDto), userController.createUser);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   put:
- *     summary: Update a user
- *     tags: [Users]
+ *     summary: Update an accommodation listing
+ *     tags: [Accommodations]
  *     description: Update an existing accommodation listing
  *     parameters:
  *       - in: path
@@ -164,7 +183,7 @@ router.post("/", userController.createUser);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Accommodation ID
  *     requestBody:
  *       required: true
  *       content:
@@ -185,7 +204,7 @@ router.post("/", userController.createUser);
  *                 type: number
  *               description:
  *                 type: string
- *               imageUrl:
+ *               image_url:
  *                 type: string
  *               verified:
  *                 type: boolean
@@ -193,16 +212,16 @@ router.post("/", userController.createUser);
  *                 type: array
  *                 items:
  *                   type: string
- *               contact:
- *                 type: object
- *                 properties:
- *                   phone:
- *                     type: string
- *                   email:
- *                     type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               phone:
+ *                 type: string
+ *               is_active:
+ *                 type: boolean
  *     responses:
  *       200:
- *         description: User updated successfully
+ *         description: Accommodation updated successfully
  *         content:
  *           application/json:
  *             schema:
@@ -215,18 +234,23 @@ router.post("/", userController.createUser);
  *       400:
  *         description: Bad request - validation error
  *       404:
- *         description: User not found
+ *         description: Accommodation not found
  *       500:
  *         description: Internal server error
  */
-router.put("/:id", userController.updateUser);
+router.put(
+  "/:id",
+  validateParams(UpdateUserParamsDto),
+  validateBody(UpdateUserDto),
+  userController.updateUser
+);
 
 /**
  * @swagger
  * /api/users:
  *   get:
- *     summary: Get users with filters
- *     tags: [Users]
+ *     summary: Get accommodations with filters
+ *     tags: [Accommodations]
  *     description: Retrieve accommodation listings with optional filters and pagination
  *     parameters:
  *       - in: query
@@ -272,7 +296,7 @@ router.put("/:id", userController.updateUser);
  *         description: Number of results to skip
  *     responses:
  *       200:
- *         description: Users retrieved successfully
+ *         description: Accommodations retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -292,7 +316,7 @@ router.put("/:id", userController.updateUser);
  *                           properties:
  *                             total:
  *                               type: integer
- *                               description: Total number of users
+ *                               description: Total number of accommodations
  *                             limit:
  *                               type: integer
  *                               description: Number of results per page
@@ -307,14 +331,14 @@ router.put("/:id", userController.updateUser);
  *       500:
  *         description: Internal server error
  */
-router.get("/", userController.getUsers);
+router.get("/", validateQuery(GetUsersQueryDto), userController.getUsers);
 
 /**
  * @swagger
  * /api/users/{id}:
  *   get:
- *     summary: Get a user by ID
- *     tags: [Users]
+ *     summary: Get an accommodation by ID
+ *     tags: [Accommodations]
  *     description: Retrieve a specific accommodation listing by ID
  *     parameters:
  *       - in: path
@@ -323,10 +347,10 @@ router.get("/", userController.getUsers);
  *         schema:
  *           type: string
  *           format: uuid
- *         description: User ID
+ *         description: Accommodation ID
  *     responses:
  *       200:
- *         description: User retrieved successfully
+ *         description: Accommodation retrieved successfully
  *         content:
  *           application/json:
  *             schema:
@@ -339,10 +363,14 @@ router.get("/", userController.getUsers);
  *       400:
  *         description: Bad request - missing ID
  *       404:
- *         description: User not found
+ *         description: Accommodation not found
  *       500:
  *         description: Internal server error
  */
-router.get("/:id", userController.getUserById);
+router.get(
+  "/:id",
+  validateParams(GetUserByIdParamsDto),
+  userController.getUserById
+);
 
 export default router;

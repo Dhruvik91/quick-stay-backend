@@ -2,6 +2,7 @@ import { Repository } from "typeorm";
 import { AppDataSource } from "../config/data-source";
 import { User } from "../entities/User";
 import { logger } from "../utils/logger";
+import { AppError } from "../middleware/errorHandler";
 
 export class UserService {
   private userRepository: Repository<User>;
@@ -40,7 +41,7 @@ export class UserService {
   }
 
   async getUsers(filters?: {
-    type?: 'PG' | 'Rental' | 'Hostel' | 'Co-living';
+    type?: "PG" | "Rental" | "Hostel" | "Co-living";
     verified?: boolean;
     minPrice?: number;
     maxPrice?: number;
@@ -51,46 +52,96 @@ export class UserService {
     try {
       const queryBuilder = this.userRepository.createQueryBuilder("user");
 
-      // Apply filters
+      // Input validation and sanitization
+      const validTypes = ["PG", "Rental", "Hostel", "Co-living"];
+
+      // Apply filters with proper validation
       if (filters?.type) {
+        if (!validTypes.includes(filters.type)) {
+          throw new AppError(
+            `Invalid type: ${filters.type}. Must be one of: ${validTypes.join(", ")}`,
+            400
+          );
+        }
         queryBuilder.andWhere("user.type = :type", { type: filters.type });
       }
 
       if (filters?.verified !== undefined) {
-        queryBuilder.andWhere("user.verified = :verified", { verified: filters.verified });
+        if (typeof filters.verified !== "boolean") {
+          throw new AppError("Verified filter must be a boolean value", 400);
+        }
+        queryBuilder.andWhere("user.verified = :verified", {
+          verified: filters.verified,
+        });
       }
 
-      if (filters?.minPrice) {
-        queryBuilder.andWhere("user.price >= :minPrice", { minPrice: filters.minPrice });
+      if (filters?.minPrice !== undefined) {
+        const minPrice = Number(filters.minPrice);
+        if (isNaN(minPrice) || minPrice < 0) {
+          throw new AppError("minPrice must be a valid positive number", 400);
+        }
+        queryBuilder.andWhere("user.price >= :minPrice", { minPrice });
       }
 
-      if (filters?.maxPrice) {
-        queryBuilder.andWhere("user.price <= :maxPrice", { maxPrice: filters.maxPrice });
+      if (filters?.maxPrice !== undefined) {
+        const maxPrice = Number(filters.maxPrice);
+        if (isNaN(maxPrice) || maxPrice < 0) {
+          throw new AppError("maxPrice must be a valid positive number", 400);
+        }
+        queryBuilder.andWhere("user.price <= :maxPrice", { maxPrice });
+      }
+
+      // Validate price range if both min and max are provided
+      if (filters?.minPrice !== undefined && filters?.maxPrice !== undefined) {
+        const minPrice = Number(filters.minPrice);
+        const maxPrice = Number(filters.maxPrice);
+        if (minPrice > maxPrice) {
+          throw new AppError("minPrice cannot be greater than maxPrice", 400);
+        }
       }
 
       if (filters?.search) {
-        queryBuilder.andWhere(
-          "(user.name ILIKE :search OR user.address ILIKE :search OR user.description ILIKE :search)",
-          { search: `%${filters.search}%` }
-        );
+        // Sanitize search input - remove potentially dangerous characters
+        const sanitizedSearch = filters.search.trim().replace(/[<>'"]/g, "");
+        if (sanitizedSearch.length > 0) {
+          queryBuilder.andWhere(
+            "(user.name ILIKE :search OR user.address ILIKE :search OR user.description ILIKE :search)",
+            { search: `%${sanitizedSearch}%` }
+          );
+        }
       }
 
-      // Get total count
+      // Get total count before applying pagination
       const total = await queryBuilder.getCount();
 
-      // Apply pagination
-      if (filters?.limit) {
-        queryBuilder.limit(filters.limit);
+      // Apply pagination with validation
+      if (filters?.limit !== undefined) {
+        const limit = Number(filters.limit);
+        if (isNaN(limit) || limit < 1 || limit > 1000) {
+          throw new AppError(
+            "limit must be a valid number between 1 and 1000",
+            400
+          );
+        }
+        queryBuilder.limit(limit);
+      } else {
+        // Default limit if not specified
+        queryBuilder.limit(50);
       }
-      if (filters?.offset) {
-        queryBuilder.offset(filters.offset);
+
+      if (filters?.offset !== undefined) {
+        const offset = Number(filters.offset);
+        if (isNaN(offset) || offset < 0) {
+          throw new AppError("offset must be a valid non-negative number", 400);
+        }
+        queryBuilder.offset(offset);
       }
 
       // Order by creation date (newest first)
-      queryBuilder.orderBy("user.createdAt", "DESC");
+      queryBuilder.orderBy("user.created_at", "DESC");
 
       const users = await queryBuilder.getMany();
-      
+
       logger.info(`Retrieved ${users.length} users out of ${total} total`);
       return { users, total };
     } catch (error) {
