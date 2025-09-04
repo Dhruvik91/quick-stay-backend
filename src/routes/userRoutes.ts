@@ -12,6 +12,7 @@ import {
   GetUserByIdParamsDto,
   UpdateUserParamsDto,
 } from "../types/dto";
+import { authenticate } from "../middleware/auth";
 
 const router = Router();
 const userController = new UserController();
@@ -167,7 +168,7 @@ const userController = new UserController();
  *       500:
  *         description: Internal server error
  */
-router.post("/", validateBody(CreateUserDto), userController.createUser);
+router.post("/", authenticate, validateBody(CreateUserDto), userController.createUser);
 
 /**
  * @swagger
@@ -240,6 +241,7 @@ router.post("/", validateBody(CreateUserDto), userController.createUser);
  */
 router.put(
   "/:id",
+  authenticate,
   validateParams(UpdateUserParamsDto),
   validateBody(UpdateUserDto),
   userController.updateUser
@@ -331,7 +333,7 @@ router.put(
  *       500:
  *         description: Internal server error
  */
-router.get("/", validateQuery(GetUsersQueryDto), userController.getUsers);
+router.get("/", authenticate, validateQuery(GetUsersQueryDto), userController.getUsers);
 
 /**
  * @swagger
@@ -369,6 +371,7 @@ router.get("/", validateQuery(GetUsersQueryDto), userController.getUsers);
  */
 router.get(
   "/:id",
+  authenticate,
   validateParams(GetUserByIdParamsDto),
   userController.getUserById
 );

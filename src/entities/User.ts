@@ -49,7 +49,7 @@ export class User {
   @Column({type: "varchar", length: 255, nullable: true})
   phone!: string;
   
-  @Column({ type: "boolean", default: false })
+  @Column({ type: "boolean", default: true })
   is_active!: boolean;
 
   @Column({ type: "boolean", default: false })
