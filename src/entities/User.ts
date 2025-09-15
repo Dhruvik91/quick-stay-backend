@@ -7,6 +7,18 @@ import {
   DeleteDateColumn,
 } from "typeorm";
 
+export enum UserType {
+  PG = "PG",
+  RENTAL = "Rental",
+  HOSTEL = "Hostel",
+  CO_LIVING = "Co-living",
+}
+
+export enum PropertyType {
+  BOYS="Boys",
+  GIRLS="Girls",
+  BOTH="Both",
+}
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
@@ -15,12 +27,22 @@ export class User {
   @Column({ type: "varchar", length: 255, })
   name!: string;
 
+  @Column({ type: "varchar", length: 255, })
+  property_name!: string;
+
   @Column({
     type: "enum",
-    enum: ["PG", "Rental", "Hostel", "Co-living"],
-    default: "Rental",
+    enum: UserType,
+    default: UserType.PG,
   })
-  type!: "PG" | "Rental" | "Hostel" | "Co-living";
+  type!: UserType;
+
+  @Column({
+    type: "enum",
+    enum: PropertyType,
+    default: PropertyType.BOYS,
+  })
+  property_type!: PropertyType;
 
   @Column({ type: "text" })
   address!: string;
@@ -48,7 +70,7 @@ export class User {
 
   @Column({type: "varchar", length: 255, nullable: true})
   phone!: string;
-  
+
   @Column({ type: "boolean", default: true })
   is_active!: boolean;
 

@@ -1,4 +1,4 @@
-import { Repository } from "typeorm";
+import { Brackets, Repository, SelectQueryBuilder } from "typeorm";
 import { AppDataSource } from "../config/data-source";
 import { User } from "../entities/User";
 import { logger } from "../utils/logger";
@@ -10,6 +10,27 @@ export class UserService {
   constructor() {
     this.userRepository = AppDataSource.getRepository(User);
   }
+
+  private addSearchCondition = (
+    queryBuilder: SelectQueryBuilder<any>,
+    searchTerm: string,
+    fields: string[]
+  ) => {
+    const sanitizedSearch = searchTerm.trim().replace(/[<>'"]/g, "");
+    
+    if (sanitizedSearch.length > 0) {
+      queryBuilder.andWhere(
+        new Brackets((qb: any) => {
+          fields.forEach((field: string) => {
+            qb.orWhere(`${field} ILIKE :search`, {
+              search: `%${sanitizedSearch}%`,
+            });
+          });
+        })
+      );
+    }
+    return queryBuilder;
+  };
 
   async createUser(userData: Partial<User>): Promise<User> {
     try {
@@ -42,6 +63,7 @@ export class UserService {
 
   async getUsers(filters?: {
     type?: "PG" | "Rental" | "Hostel" | "Co-living";
+    property_type?: "Boys" | "Girls" | "Both";
     verified?: boolean;
     minPrice?: number;
     maxPrice?: number;
@@ -54,7 +76,8 @@ export class UserService {
 
       // Input validation and sanitization
       const validTypes = ["PG", "Rental", "Hostel", "Co-living"];
-
+      const validPropertyTypes = ["Boys", "Girls", "Both"];
+      
       // Apply filters with proper validation
       if (filters?.type) {
         if (!validTypes.includes(filters.type)) {
@@ -64,6 +87,16 @@ export class UserService {
           );
         }
         queryBuilder.andWhere("user.type = :type", { type: filters.type });
+      }
+
+      if (filters?.property_type) {
+        if (!validPropertyTypes.includes(filters.property_type)) {
+          throw new AppError(
+            `Invalid property type: ${filters.property_type}. Must be one of: ${validPropertyTypes.join(", ")}`,
+            400
+          );
+        }
+        queryBuilder.andWhere("user.property_type = :property_type", { property_type: filters.property_type });
       }
 
       if (filters?.verified !== undefined) {
@@ -101,14 +134,12 @@ export class UserService {
       }
 
       if (filters?.search) {
-        // Sanitize search input - remove potentially dangerous characters
-        const sanitizedSearch = filters.search.trim().replace(/[<>'"]/g, "");
-        if (sanitizedSearch.length > 0) {
-          queryBuilder.andWhere(
-            "(user.name ILIKE :search OR user.address ILIKE :search OR user.description ILIKE :search)",
-            { search: `%${sanitizedSearch}%` }
-          );
-        }
+        this.addSearchCondition(queryBuilder, filters.search, [
+          "user.name",
+          "user.address", 
+          "user.property_name",
+          "user.description"
+        ]);
       }
 
       // Get total count before applying pagination
