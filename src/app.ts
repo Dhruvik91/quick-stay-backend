@@ -16,6 +16,7 @@ import { AppDataSource } from "./config/data-source";
 import { specs } from "./config/swagger";
 import { ResponseUtil } from "./utils/response";
 import userRoutes from "./routes/userRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 
 // Load environment variables
 config();
@@ -178,6 +179,9 @@ app.get("/", (req, res) => {
 
 // User routes
 app.use("/api/users", userRoutes);
+
+// Upload routes
+app.use("/api/uploads", uploadRoutes);
 
 // Error handling
 app.use(errorHandler);
