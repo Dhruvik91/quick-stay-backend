@@ -71,6 +71,9 @@ export class User {
   @Column({type: "varchar", length: 255, nullable: true})
   phone!: string;
 
+  @Column({type: "varchar", length: 255, nullable: true})
+  google_map_link!: string
+
   @Column({ type: "boolean", default: true })
   is_active!: boolean;
 

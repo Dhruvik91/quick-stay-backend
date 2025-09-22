@@ -78,7 +78,7 @@ const options: swaggerJsdoc.Options = {
         // User/Accommodation Schemas
         User: {
           type: "object",
-          required: ["name", "type", "address", "price"],
+          required: ["name", "property_name", "type", "property_type", "address", "price"],
           properties: {
             id: {
               type: "string",
@@ -89,10 +89,19 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               description: "Name of the accommodation",
             },
+            property_name: {
+              type: "string",
+              description: "Name of the property",
+            },
             type: {
               type: "string",
               enum: ["PG", "Rental", "Hostel", "Co-living"],
               description: "Type of accommodation",
+            },
+            property_type: {
+              type: "string",
+              enum: ["Boys", "Girls", "Both"],
+              description: "Property type for gender preference",
             },
             address: {
               type: "string",
@@ -136,6 +145,10 @@ const options: swaggerJsdoc.Options = {
             phone: {
               type: "string",
               description: "Contact phone number",
+            },
+            google_map_link: {
+              type: "string",
+              description: "Google Maps link for the property location",
             },
             is_active: {
               type: "boolean",
@@ -168,16 +181,25 @@ const options: swaggerJsdoc.Options = {
         // DTOs
         CreateUserDto: {
           type: "object",
-          required: ["name", "type", "address", "price"],
+          required: ["name", "property_name", "type", "property_type", "address", "price"],
           properties: {
             name: {
               type: "string",
               description: "Name of the accommodation",
             },
+            property_name: {
+              type: "string",
+              description: "Name of the property",
+            },
             type: {
               type: "string",
               enum: ["PG", "Rental", "Hostel", "Co-living"],
               description: "Type of accommodation",
+            },
+            property_type: {
+              type: "string",
+              enum: ["Boys", "Girls", "Both"],
+              description: "Property type for gender preference",
             },
             address: {
               type: "string",
@@ -218,6 +240,10 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               description: "Contact phone number",
             },
+            google_map_link: {
+              type: "string",
+              description: "Google Maps link for the property location",
+            },
           },
         },
         UpdateUserDto: {
@@ -227,10 +253,19 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               description: "Name of the accommodation",
             },
+            property_name: {
+              type: "string",
+              description: "Name of the property",
+            },
             type: {
               type: "string",
               enum: ["PG", "Rental", "Hostel", "Co-living"],
               description: "Type of accommodation",
+            },
+            property_type: {
+              type: "string",
+              enum: ["Boys", "Girls", "Both"],
+              description: "Property type for gender preference",
             },
             address: {
               type: "string",
@@ -274,6 +309,10 @@ const options: swaggerJsdoc.Options = {
             phone: {
               type: "string",
               description: "Contact phone number",
+            },
+            google_map_link: {
+              type: "string",
+              description: "Google Maps link for the property location",
             },
             is_active: {
               type: "boolean",
