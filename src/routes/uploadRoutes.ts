@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { authenticate } from "../middleware/auth";
 import { uploadImages } from "../middleware/upload";
 import { UploadController } from "../controllers/UploadController";
 
@@ -15,13 +14,11 @@ const controller = new UploadController();
 
 /**
  * @swagger
- * /api/uploads/images:
+ * /api/uploads/images/public:
  *   post:
- *     summary: Upload one or more images to S3
- *     description: Accepts multiple images with form field name `images`, uploads them to S3, and returns their public URLs.
+ *     summary: Upload images without authentication (for user creation form)
+ *     description: Accepts multiple images with form field name `images`, uploads them to S3, and returns their public URLs. No authentication required.
  *     tags: [Uploads]
- *     security:
- *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -68,8 +65,7 @@ const controller = new UploadController();
  *         description: Internal server error
  */
 router.post(
-  "/images",
-  authenticate,
+  "/images/public",
   (req, res, next) => {
     uploadImages(req, res, (err?: any) => {
       if (err) {
