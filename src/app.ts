@@ -82,6 +82,7 @@ app.use(
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:4000",
+  "https://www.quickstay.homes"
 ];
 
 app.use(
