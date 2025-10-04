@@ -54,9 +54,6 @@ const userController = new UserController();
  *         description:
  *           type: string
  *           description: Description of the accommodation
- *         image_url:
- *           type: string
- *           description: URL of the accommodation image
  *         verified:
  *           type: boolean
  *           default: false
@@ -136,9 +133,6 @@ const userController = new UserController();
  *               description:
  *                 type: string
  *                 example: "Beautiful apartment with modern amenities"
- *               image_url:
- *                 type: string
- *                 example: "https://example.com/image.jpg"
  *               amenities:
  *                 type: array
  *                 items:
@@ -204,8 +198,6 @@ router.post("/", authenticate, validateBody(CreateUserDto), userController.creat
  *               rating:
  *                 type: number
  *               description:
- *                 type: string
- *               image_url:
  *                 type: string
  *               verified:
  *                 type: boolean

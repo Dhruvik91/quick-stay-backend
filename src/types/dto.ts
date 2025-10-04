@@ -46,10 +46,6 @@ export class CreateUserDto {
   @IsOptional()
   description?: string;
 
-  @IsString()
-  @IsOptional()
-  image_url?: string;
-
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
@@ -93,10 +89,6 @@ export class UpdateUserDto {
   @IsString()
   @IsOptional()
   description?: string;
-
-  @IsString()
-  @IsOptional()
-  image_url?: string;
 
   @IsBoolean()
   @IsOptional()
