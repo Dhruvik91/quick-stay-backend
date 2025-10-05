@@ -194,9 +194,9 @@ export class GetUsersQueryDto {
   offset?: number = 0;
 }
 
-export class GetUserByIdParamsDto {
-  @IsUUID()
-  id!: string;
+export class GetUserBySlugParamsDto {
+  @IsString()
+  slug!: string;
 }
 
 export class UpdateUserParamsDto {

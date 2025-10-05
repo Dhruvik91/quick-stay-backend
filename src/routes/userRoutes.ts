@@ -9,7 +9,7 @@ import {
   CreateUserDto,
   UpdateUserDto,
   GetUsersQueryDto,
-  GetUserByIdParamsDto,
+  GetUserBySlugParamsDto,
   UpdateUserParamsDto,
 } from "../types/dto";
 import { authenticate } from "../middleware/auth";
@@ -379,10 +379,10 @@ router.get("/", authenticate, validateQuery(GetUsersQueryDto), userController.ge
  *         description: Internal server error
  */
 router.get(
-  "/:id",
+  "/:slug",
   authenticate,
-  validateParams(GetUserByIdParamsDto),
-  userController.getUserById
+  validateParams(GetUserBySlugParamsDto),
+  userController.getUserBySlug
 );
 
 export default router;

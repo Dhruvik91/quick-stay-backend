@@ -75,12 +75,12 @@ export class UserController {
   };
 
   /**
-   * Get a single user by ID
+   * Get a single user by slug
    */
-  getUserById = async (req: Request, res: Response): Promise<void> => {
+  getUserBySlug = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { id } = req.params;
-      const user = await this.userService.getUserById(id);
+      const { slug } = req.params;
+      const user = await this.userService.getUserBySlug(slug);
 
       if (!user) {
         ResponseUtil.notFound(res, "User not found");
@@ -89,7 +89,7 @@ export class UserController {
 
       ResponseUtil.success(res, "User retrieved successfully", user);
     } catch (error) {
-      logger.error("Error in getUserById controller:", error);
+      logger.error("Error in getUserBySlug controller:", error);
       ResponseUtil.internalServerError(res, "Failed to retrieve user");
     }
   };
