@@ -9,7 +9,7 @@ import {
   CreateUserDto,
   UpdateUserDto,
   GetUsersQueryDto,
-  GetUserByIdParamsDto,
+  GetUserBySlugParamsDto,
   UpdateUserParamsDto,
 } from "../types/dto";
 import { authenticate } from "../middleware/auth";
@@ -54,9 +54,6 @@ const userController = new UserController();
  *         description:
  *           type: string
  *           description: Description of the accommodation
- *         image_url:
- *           type: string
- *           description: URL of the accommodation image
  *         verified:
  *           type: boolean
  *           default: false
@@ -111,17 +108,26 @@ const userController = new UserController();
  *             type: object
  *             required:
  *               - name
+ *               - property_name
  *               - type
+ *               - property_type
  *               - address
  *               - price
  *             properties:
  *               name:
  *                 type: string
  *                 example: "Sunset Apartments"
+ *               property_name:
+ *                 type: string
+ *                 example: "Sunset Premium Residency"
  *               type:
  *                 type: string
  *                 enum: [PG, Rental, Hostel, Co-living]
  *                 example: "Rental"
+ *               property_type:
+ *                 type: string
+ *                 enum: [Boys, Girls, Both]
+ *                 example: "Both"
  *               address:
  *                 type: string
  *                 example: "123 Main Street, City, State 12345"
@@ -136,9 +142,6 @@ const userController = new UserController();
  *               description:
  *                 type: string
  *                 example: "Beautiful apartment with modern amenities"
- *               image_url:
- *                 type: string
- *                 example: "https://example.com/image.jpg"
  *               amenities:
  *                 type: array
  *                 items:
@@ -151,6 +154,14 @@ const userController = new UserController();
  *               phone:
  *                 type: string
  *                 example: "+1234567890"
+ *               google_map_link:
+ *                 type: string
+ *                 example: "https://maps.google.com/?q=..."
+ *               images:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 example: ["https://s3.amazonaws.com/bucket/image1.jpg"]
  *     responses:
  *       201:
  *         description: Accommodation created successfully
@@ -168,7 +179,7 @@ const userController = new UserController();
  *       500:
  *         description: Internal server error
  */
-router.post("/", authenticate, validateBody(CreateUserDto), userController.createUser);
+router.post("/", validateBody(CreateUserDto), userController.createUser);
 
 /**
  * @swagger
@@ -204,8 +215,6 @@ router.post("/", authenticate, validateBody(CreateUserDto), userController.creat
  *               rating:
  *                 type: number
  *               description:
- *                 type: string
- *               image_url:
  *                 type: string
  *               verified:
  *                 type: boolean
@@ -370,10 +379,10 @@ router.get("/", authenticate, validateQuery(GetUsersQueryDto), userController.ge
  *         description: Internal server error
  */
 router.get(
-  "/:id",
+  "/:slug",
   authenticate,
-  validateParams(GetUserByIdParamsDto),
-  userController.getUserById
+  validateParams(GetUserBySlugParamsDto),
+  userController.getUserBySlug
 );
 
 export default router;

@@ -20,12 +20,24 @@ export enum UserType {
   CO_LIVING = "Co-living",
 }
 
+export enum PropertyType {
+  BOYS = "Boys",
+  GIRLS = "Girls",
+  BOTH = "Both",
+}
+
 export class CreateUserDto {
   @IsString()
   name!: string;
 
+  @IsString()
+  property_name!: string;
+
   @IsEnum(UserType)
   type!: UserType;
+
+  @IsEnum(PropertyType)
+  property_type!: PropertyType;
 
   @IsString()
   address!: string;
@@ -46,10 +58,6 @@ export class CreateUserDto {
   @IsOptional()
   description?: string;
 
-  @IsString()
-  @IsOptional()
-  image_url?: string;
-
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
@@ -62,6 +70,15 @@ export class CreateUserDto {
   @IsString()
   @IsOptional()
   phone?: string;
+
+  @IsString()
+  @IsOptional()
+  google_map_link?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
 }
 
 export class UpdateUserDto {
@@ -69,9 +86,17 @@ export class UpdateUserDto {
   @IsOptional()
   name?: string;
 
+  @IsString()
+  @IsOptional()
+  property_name?: string;
+
   @IsEnum(UserType)
   @IsOptional()
   type?: UserType;
+
+  @IsEnum(PropertyType)
+  @IsOptional()
+  property_type?: PropertyType;
 
   @IsString()
   @IsOptional()
@@ -94,10 +119,6 @@ export class UpdateUserDto {
   @IsOptional()
   description?: string;
 
-  @IsString()
-  @IsOptional()
-  image_url?: string;
-
   @IsBoolean()
   @IsOptional()
   verified?: boolean;
@@ -115,6 +136,15 @@ export class UpdateUserDto {
   @IsOptional()
   phone?: string;
 
+  @IsString()
+  @IsOptional()
+  google_map_link?: string;
+
+  @IsArray()
+  @IsString({ each: true })
+  @IsOptional()
+  images?: string[];
+
   @IsBoolean()
   @IsOptional()
   is_active?: boolean;
@@ -124,6 +154,10 @@ export class GetUsersQueryDto {
   @IsEnum(UserType)
   @IsOptional()
   type?: UserType;
+
+  @IsEnum(PropertyType)
+  @IsOptional()
+  property_type?: PropertyType;
 
   @IsBoolean()
   @Transform(({ value }) => value === "true")
@@ -160,9 +194,9 @@ export class GetUsersQueryDto {
   offset?: number = 0;
 }
 
-export class GetUserByIdParamsDto {
-  @IsUUID()
-  id!: string;
+export class GetUserBySlugParamsDto {
+  @IsString()
+  slug!: string;
 }
 
 export class UpdateUserParamsDto {
