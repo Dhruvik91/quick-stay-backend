@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  BeforeInsert,
+  BeforeUpdate,
 } from "typeorm";
 
 export enum UserType {
@@ -56,9 +58,6 @@ export class User {
   @Column({ type: "text", nullable: true })
   description?: string;
 
-  @Column({ type: "varchar", length: 500, nullable: true })
-  image_url?: string;
-
   @Column({ type: "boolean", default: false })
   verified!: boolean;
 
@@ -74,6 +73,12 @@ export class User {
   @Column({type: "varchar", length: 255, nullable: true})
   google_map_link!: string
 
+  @Column({type: "varchar", length: 255, nullable: true})
+  slug!: string;
+
+  @Column({type: "simple-array", default: []})
+  images!: string[]
+
   @Column({ type: "boolean", default: true })
   is_active!: boolean;
 
@@ -88,4 +93,17 @@ export class User {
 
   @DeleteDateColumn()
   deleted_at!: Date;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  generateSlug() {
+    if (this.property_name) {
+      this.slug = this.property_name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    }
+  }
 }

@@ -181,12 +181,12 @@ export class UserService {
     }
   }
 
-  async getUserById(id: string): Promise<User | null> {
+  async getUserBySlug(slug: string): Promise<User | null> {
     try {
-      const user = await this.userRepository.findOne({ where: { id } });
+      const user = await this.userRepository.findOne({ where: { slug } });
       return user;
     } catch (error) {
-      logger.error(`Error retrieving user with ID ${id}:`, error);
+      logger.error(`Error retrieving user with slug ${slug}:`, error);
       throw error;
     }
   }

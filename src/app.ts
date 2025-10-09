@@ -16,6 +16,7 @@ import { AppDataSource } from "./config/data-source";
 import { specs } from "./config/swagger";
 import { ResponseUtil } from "./utils/response";
 import userRoutes from "./routes/userRoutes";
+import uploadRoutes from "./routes/uploadRoutes";
 
 // Load environment variables
 config();
@@ -81,6 +82,7 @@ app.use(
 // CORS configuration
 const allowedOrigins = [
   "http://localhost:4000",
+  "https://www.quickstay.homes"
 ];
 
 app.use(
@@ -178,6 +180,9 @@ app.get("/", (req, res) => {
 
 // User routes
 app.use("/api/users", userRoutes);
+
+// Upload routes
+app.use("/api/uploads", uploadRoutes);
 
 // Error handling
 app.use(errorHandler);

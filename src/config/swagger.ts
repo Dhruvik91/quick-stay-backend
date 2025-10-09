@@ -23,6 +23,13 @@ const options: swaggerJsdoc.Options = {
       },
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT",
+        },
+      },
       schemas: {
         // Standardized Response Format
         ApiResponse: {
@@ -121,10 +128,6 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               description: "Description of the accommodation",
             },
-            image_url: {
-              type: "string",
-              description: "URL of the accommodation image",
-            },
             verified: {
               type: "boolean",
               default: false,
@@ -220,10 +223,6 @@ const options: swaggerJsdoc.Options = {
               type: "string",
               description: "Description of the accommodation",
             },
-            image_url: {
-              type: "string",
-              description: "URL of the accommodation image",
-            },
             amenities: {
               type: "array",
               items: {
@@ -285,10 +284,6 @@ const options: swaggerJsdoc.Options = {
             description: {
               type: "string",
               description: "Description of the accommodation",
-            },
-            image_url: {
-              type: "string",
-              description: "URL of the accommodation image",
             },
             verified: {
               type: "boolean",
